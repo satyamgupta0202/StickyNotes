@@ -1,7 +1,9 @@
 package com.example.sticknotes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,6 +40,27 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(),NotesEditor.class);
                 intent.putExtra("itemid",position);
                 startActivity(intent);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int deleteindex = position;
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("delete")
+                        .setMessage("do you want to delete")
+                        .setIcon(android.R.drawable.btn_star)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                notes.remove(deleteindex);
+                                arrayAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("No",null)
+                        .show();
+                return true;
             }
         });
 
