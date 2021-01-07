@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
      static ArrayList<String> notes = new ArrayList<String>();
      static ArrayAdapter arrayAdapter;
+    SharedPreferences sharedPreferences ;
 
 
     @Override
@@ -30,8 +32,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ListView listView = findViewById(R.id.listView);
+        sharedPreferences = getApplicationContext().getSharedPreferences("com.example.sticknotes", Context.MODE_PRIVATE);
        // sharedPreferences = this.getSharedPreferences("com.example.sticknotes", Context.MODE_PRIVATE);
-        notes.add("Tap to Add Your Notes");
+        HashSet<String>set =  (HashSet<String>)sharedPreferences.getStringSet("set",null);
+        if(set==null){
+            notes.add("Notes");
+        }
+        else {
+            notes = new ArrayList<String>(set);
+        }
+
+
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,notes);
         listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -56,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 notes.remove(deleteindex);
                                 arrayAdapter.notifyDataSetChanged();
+                                HashSet<String > set = new HashSet<String>(MainActivity.notes);
+                                sharedPreferences.edit().putStringSet("set",set).apply();
                             }
                         })
                         .setNegativeButton("No",null)
